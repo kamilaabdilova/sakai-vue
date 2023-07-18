@@ -1,23 +1,22 @@
 <template>
   <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
-    <Toast />
+
 
     <div class="flex flex-column align-items-center justify-content-center">
       <img :src="logoUrl" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" />
       <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
         <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px">
           <div class="text-center mb-5">
-            <div class="text-900 text-3xl font-medium mb-3">Welcome to Kamila rulit!</div>
+            <div class="text-900 text-3xl font-medium mb-3">Register!</div>
             <span class="text-600 font-medium">Please, log in</span>
           </div>
 
           <div>
-            <form v-on:submit.prevent="handleLogin()">
               <label for="email1" class="block text-900 text-xl font-medium mb-2">Username</label>
               <InputText id="email1" v-model="userForm.username" type="text" placeholder="Username" class="w-full md:w-30rem mb-5" style="padding: 1rem" />
 
-<!--              <label for="email1" class="block text-900 text-xl font-medium mb-2">Email</label>-->
-<!--              <InputText id="email1" v-model="userForm.email" type="text" placeholder="Email" class="w-full md:w-30rem mb-5" style="padding: 1rem" />-->
+              <label for="email1" class="block text-900 text-xl font-medium mb-2">Email</label>
+              <InputText id="email1" v-model="userForm.email" type="text" placeholder="Email" class="w-full md:w-30rem mb-5" style="padding: 1rem" />
 
               <label for="password1" class="block text-900 font-medium text-xl mb-2">Password</label>
               <Password
@@ -29,32 +28,28 @@
               >
               </Password>
 
-
-
-<!--              <label for="password1" class="block text-900 font-medium text-xl mb-2">Confirm Password</label>-->
-<!--              <Password-->
-<!--                  id="password1"-->
-<!--                  v-model="userForm.password1"-->
-<!--                  placeholder="Password"-->
-<!--                  class="w-full mb-3"-->
-<!--                  inputClass="w-full"-->
-<!--              >-->
-<!--              </Password>-->
+              <label for="password1" class="block text-900 font-medium text-xl mb-2">Confirm Password</label>
+              <Password
+                  id="password1"
+                  v-model="userForm.confirmPassword"
+                  placeholder="Password"
+                  class="w-full mb-3"
+                  inputClass="w-full"
+              >
+              </Password>
 
               <div class="flex align-items-center justify-content-between mb-5 gap-5">
                 <!-- <div class="flex align-items-center">
                     <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
                     <label for="rememberme1">Запомнить меня</label>
-                </div> -->
-                <p>Нет аккаунта?</p>
-                <RouterLink to="/auth/register" class="p-link layout-topbar-button">
+                </div>
+                <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">Forgot password?</a> -->
+                <RouterLink to="/auth/login" class="p-link layout-topbar-button">
                   <i class="pi pi-user"></i>
-                  <span>Регистрация</span>
+                  <span>Авторизация</span>
                 </RouterLink>
-<!--                <a href="/auth/register" class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(&#45;&#45;primary-color)">Регистрация</a>-->
               </div>
-              <Button :disabled="loading" type="submit" label="Войти" class="w-full p-3 text-xl"></Button>
-            </form>
+              <Button :disabled="loading" @click="registerUser" label="Зарегистрироваться" class="w-full p-3 text-xl"></Button>
           </div>
         </div>
       </div>
@@ -68,64 +63,55 @@ import { useLayout } from '@/layout/composables/layout';
 import { ref, computed } from 'vue';
 import AppConfig from '@/layout/AppConfig.vue';
 import { useToast } from 'primevue/usetoast';
+import UserService from "@/service/UserService";
 import {useRouter} from "vue-router";
-const router = useRouter();
 
 export default {
   setup() {
     const { layoutConfig } = useLayout();
-    const checked = ref(false);
 
     const logoUrl = computed(() => {
       return `layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.png`;
     });
 
     const toast = useToast();
+    const router = useRouter();
 
     return {
-      checked,
       logoUrl,
-      toast
+      toast,
+      router
     };
   },
-  name: 'Login',
+  name: 'register',
   components: {
-    AppConfig
+    AppConfig,
+    UserService
   },
   data() {
     return {
       loading: false,
       userForm: {
-        username: '',
-        password: ''
+        username: null,
+        email: null,
+        password: null,
+        confirmPassword: null
       }
     };
   },
-  computed: {
-    // loggedIn() {
-    //   return this.$store.state.auth.status.loggedIn;
-    // }
-  },
-  created() {
-    if (this.loggedIn) {
-      this.$router.push('/');
-    }
-  },
   methods: {
-    handleLogin() {
-      this.loading = true;
-
-      this.$store.dispatch('auth/login', this.userForm).then(
-          () => {
-            this.$router.push('/');
-          },
-          (error) => {
-            this.loading = false;
-            this.toast.add({ severity: 'error', summary: 'Error!', detail: error.response.data.message, life: 3000 });
-          }
-      );
+    async registerUser() {
+        try {
+          console.log('we are here')
+          console.log(this.userForm.username, this.userForm.email, this.userForm.password, this.userForm.confirmPassword)
+          const response = await UserService.registerUser(this.userForm.username, this.userForm.email, this.userForm.password, this.userForm.confirmPassword);
+          this.toast.add({ severity: 'success', summary: 'Success', detail: response, life: 3000 });
+        } catch (error) {
+          console.log(error)
+          this.toast.add({ severity: 'error', summary: 'Error', detail: error, life: 3000 });
+        }
+      },
     }
-  }
 };
 </script>
 
