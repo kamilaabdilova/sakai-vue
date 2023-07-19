@@ -39,11 +39,6 @@
               </Password>
 
               <div class="flex align-items-center justify-content-between mb-5 gap-5">
-                <!-- <div class="flex align-items-center">
-                    <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
-                    <label for="rememberme1">Запомнить меня</label>
-                </div>
-                <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">Forgot password?</a> -->
                 <RouterLink to="/auth/login" class="p-link layout-topbar-button">
                   <i class="pi pi-user"></i>
                   <span>Авторизация</span>

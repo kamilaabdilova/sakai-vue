@@ -1,4 +1,4 @@
-import AuthService from '@/service/AuthService'
+import UserService from '@/service/UserService'
 
 // eslint-disable-next-line camelcase
 import Jwt_decode from 'jwt-decode'
@@ -14,10 +14,14 @@ export default {
   state: initialState,
   actions: {
     async signIn({ commit }, payload) {
-      const response = await AuthService.singIn(payload)
-      if (response.status === 201) {
-          localStorage.setItem('user', JSON.stringify(response.user))
-          commit('loginSuccess', response.user)
+      const response = await UserService.authUser(payload)
+
+      if (response.status === 200) {
+        console.log(response.user)
+        debugger
+
+        localStorage.setItem('user', JSON.stringify(response.user))
+        commit('loginSuccess', response.user)
       } else {
         commit('loginFailure');
       }

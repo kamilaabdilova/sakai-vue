@@ -104,9 +104,10 @@ import CodeHighlight from '@/components/CodeHighlight.vue';
 import BlockViewer from '@/components/BlockViewer.vue';
 
 import '@/assets/styles.scss';
+import store from "@/store";
 
 const app = createApp(App);
-
+app.use(store)
 app.use(router);
 app.use(PrimeVue, { ripple: true });
 app.use(ToastService);

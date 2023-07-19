@@ -7,7 +7,7 @@
       <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
         <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px">
           <div class="text-center mb-5">
-            <div class="text-900 text-3xl font-medium mb-3">Welcome to Kamila rulit!</div>
+            <div class="text-900 text-3xl font-medium mb-3">Welcome to Online Shop!</div>
             <span class="text-600 font-medium">Please, log in</span>
           </div>
 
@@ -15,9 +15,6 @@
             <form v-on:submit.prevent="handleLogin()">
               <label for="email1" class="block text-900 text-xl font-medium mb-2">Username</label>
               <InputText id="email1" v-model="userForm.username" type="text" placeholder="Username" class="w-full md:w-30rem mb-5" style="padding: 1rem" />
-
-<!--              <label for="email1" class="block text-900 text-xl font-medium mb-2">Email</label>-->
-<!--              <InputText id="email1" v-model="userForm.email" type="text" placeholder="Email" class="w-full md:w-30rem mb-5" style="padding: 1rem" />-->
 
               <label for="password1" class="block text-900 font-medium text-xl mb-2">Password</label>
               <Password
@@ -29,23 +26,7 @@
               >
               </Password>
 
-
-
-<!--              <label for="password1" class="block text-900 font-medium text-xl mb-2">Confirm Password</label>-->
-<!--              <Password-->
-<!--                  id="password1"-->
-<!--                  v-model="userForm.password1"-->
-<!--                  placeholder="Password"-->
-<!--                  class="w-full mb-3"-->
-<!--                  inputClass="w-full"-->
-<!--              >-->
-<!--              </Password>-->
-
               <div class="flex align-items-center justify-content-between mb-5 gap-5">
-                <!-- <div class="flex align-items-center">
-                    <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
-                    <label for="rememberme1">Запомнить меня</label>
-                </div> -->
                 <p>Нет аккаунта?</p>
                 <RouterLink to="/auth/register" class="p-link layout-topbar-button">
                   <i class="pi pi-user"></i>
@@ -63,70 +44,40 @@
   <!-- <AppConfig simple /> -->
 </template>
 
-<script>
+<script setup>
 import { useLayout } from '@/layout/composables/layout';
-import { ref, computed } from 'vue';
+import {ref, computed, reactive} from 'vue';
 import AppConfig from '@/layout/AppConfig.vue';
 import { useToast } from 'primevue/usetoast';
-import {useRouter} from "vue-router";
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+
+const { layoutConfig } = useLayout();
+const checked = ref(false);
+
+const logoUrl = computed(() => {
+  return `layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.png`;
+});
+
+const toast = useToast();
 const router = useRouter();
+const store = useStore();
 
-export default {
-  setup() {
-    const { layoutConfig } = useLayout();
-    const checked = ref(false);
+const loading = ref(false);
+const userForm = reactive({
+  username: '',
+  password: ''
+});
 
-    const logoUrl = computed(() => {
-      return `layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.png`;
-    });
+const handleLogin = async () => {
+  loading.value = true;
 
-    const toast = useToast();
-
-    return {
-      checked,
-      logoUrl,
-      toast
-    };
-  },
-  name: 'Login',
-  components: {
-    AppConfig
-  },
-  data() {
-    return {
-      loading: false,
-      userForm: {
-        username: '',
-        password: ''
-      }
-    };
-  },
-  computed: {
-    // loggedIn() {
-    //   return this.$store.state.auth.status.loggedIn;
-    // }
-  },
-  created() {
-    if (this.loggedIn) {
-      this.$router.push('/');
-    }
-  },
-  methods: {
-    handleLogin() {
-      this.loading = true;
-
-      this.$store.dispatch('auth/login', this.userForm).then(
-          () => {
-            this.$router.push('/');
-          },
-          (error) => {
-            this.loading = false;
-            this.toast.add({ severity: 'error', summary: 'Error!', detail: error.response.data.message, life: 3000 });
-          }
-      );
-    }
+  const response = await store.dispatch('auth/signIn', userForm)
+  if(response.status == 200){
+    router.push('/')
   }
-};
+
+}
 </script>
 
 <style scoped>
