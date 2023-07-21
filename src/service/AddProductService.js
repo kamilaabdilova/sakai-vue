@@ -1,12 +1,14 @@
 
 import $api from '@/http'
 
-async function addProduct(image, price, description, statusId) {
+async function addProduct(productData, statusId) {
+    debugger
+
     console.log('we are in service');
     const response = await $api.post('/product/save', {
-        // image: image,
-        price: price,
-        description: description,
+        imageId: productData.imageId,
+        price: productData.price,
+        description: productData.description,
         statusId: statusId
     });
     console.log(response);

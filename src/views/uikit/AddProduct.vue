@@ -21,22 +21,18 @@
             <label for="status" class="block text-900 text-xl font-medium mb-2">Status</label>
               <Dropdown v-model="productData.statusId" :options="productStatuses" optionLabel="name" placeholder="Select status" class="w-full md:w-30rem mb-5" />
            </div>
-          <Button @click="addNewProduct" label="Submit" class="mr-2 mb-2">Add product</Button>
 
-<!--          <button @click="addNewProduct" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" style="margin-top: 30px;">-->
-<!--            Add Product-->
-<!--          </button>-->
         </div>
       </div>
 </template>
 <script setup>
-import {reactive, ref} from 'vue';
+import {onMounted, reactive, ref} from 'vue';
 import * as AddProductService from "@/service/AddProductService";
 import { useToast } from 'primevue/usetoast';
 
 
 const productData = reactive({
-  image: '',
+  imageId: '',
   price: '',
   description: '',
   statusId: null,
@@ -52,37 +48,40 @@ const productStatuses = ref([
   { name: 'LOW STOCK', code: '3' }
 ]);
 
-async function addNewProduct() {
-  try {
-    const response = await AddProductService.addProduct(
-        productData.image,
-        productData.price,
-        productData.description,
-        productData.statusId.code
-    );
+async function addNewProduct(fileId) {
 
-    productData.image = '';
+  debugger
+
+  productData.imageId = fileId
+
+  try {
+    const response = await AddProductService.addProduct(productData, productData.statusId.code);
+
+    productData.imageId = '';
     productData.price = '';
     productData.description = '';
     productData.statusId = '';
 
     products.value.push(response.data);
     toast.add({ severity: 'success', summary: 'Success', detail: "Product added successfully!", life: 2000 });
-    console.log('Product added successfully!', response.data);
+
   } catch (error) {
-    console.error('Failed to add product:', error);
+
     toast.add({ severity: 'error', summary: 'Error', detail: error, life: 2000 });
   }
 }
 
 const customBase64Uploader = async (event) => {
-  const file = event.files[0];
+
+  const file = event.files[0]
+
   const reader = new FileReader();
   let blob = await fetch(file.objectURL).then((r) => r.blob());
 
   reader.readAsDataURL(blob);
 
-  reader.onloadend = function () {
+  reader.onloadend = async function () {
+
     const fileName = file.name;
     const extension = fileName.substring(fileName.lastIndexOf('.') + 1);
     const base64data = reader.result;
@@ -91,19 +90,27 @@ const customBase64Uploader = async (event) => {
       imageExtension: extension,
       imageData: base64data
     };
-    try
-    {
-      const result = AddProductService.uploadImage(options);
-      console.log(result);
-      toast.add({ severity: 'success', summary: 'Success', detail: result, life: 2000 });
+    try {
+
+      const result = await AddProductService.uploadImage(options);
+      // if (result.status == 200){
+      await addNewProduct(result.data)
+      // console.log(result);
+      // }
+      // console.log(result);
+
+      toast.add({severity: 'success', summary: 'Success', detail: result, life: 2000});
       productData.image = result;
-    }
-    catch(error) {
+    } catch (error) {
       toast.add({severity: 'error', summary: 'Error', detail: error, life: 2000});
     }
   };
 };
 
 const products = ref([]);
+
+onMounted(()=>{
+
+})
 </script>
 
