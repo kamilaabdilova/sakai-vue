@@ -69,6 +69,11 @@ const router = createRouter({
                     component: () => import('@/views/uikit/Media.vue')
                 },
                 {
+                    path: '/uikit/addProduct',
+                    name: 'addProduct',
+                    component: () => import('@/views/uikit/AddProduct.vue')
+                },
+                {
                     path: '/uikit/menu',
                     component: () => import('@/views/uikit/Menu.vue'),
                     children: [

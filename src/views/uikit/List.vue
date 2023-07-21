@@ -73,6 +73,7 @@ const onSortChange = (event) => {
                             </div>
                         </div>
                     </template>
+
                     <template #list="slotProps">
                         <div class="col-12">
                             <div class="flex flex-column md:flex-row align-items-center p-3 w-full">
@@ -94,7 +95,7 @@ const onSortChange = (event) => {
                             </div>
                         </div>
                     </template>
-
+<!--вид списка-->
                     <template #grid="slotProps">
                         <div class="col-12 md:col-4">
                             <div class="card m-3 border-1 surface-border">
