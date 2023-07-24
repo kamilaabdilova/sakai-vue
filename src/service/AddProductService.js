@@ -1,5 +1,6 @@
 
 import $api from '@/http'
+// import {props as products} from "primevue/tag";
 
 async function addProduct(productData, statusId) {
     debugger
@@ -12,6 +13,7 @@ async function addProduct(productData, statusId) {
         statusId: statusId
     });
     console.log(response);
+
     return response;
 }
 
@@ -19,8 +21,19 @@ function uploadImage(options) {
     const resp = $api.post('/product/upload', options);
     return resp;
 }
+async function getListProduct(){
+    try {
+        const response = await $api.get('/product/findAll');
+        return response.data;
+    } catch (error) {
+        console.error('Error adding product:', error);
+        throw error;
+    }
+
+}
 
 export {
     addProduct,
-    uploadImage
+    uploadImage,
+    getListProduct
 }

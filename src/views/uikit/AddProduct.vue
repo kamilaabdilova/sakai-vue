@@ -30,16 +30,15 @@ import {onMounted, reactive, ref} from 'vue';
 import * as AddProductService from "@/service/AddProductService";
 import { useToast } from 'primevue/usetoast';
 
-
-const productData = reactive({
+import { useRouter } from 'vue-router';
+let productData = reactive({
   imageId: '',
   price: '',
   description: '',
   statusId: null,
 });
-
+const router = useRouter();
 const toast = useToast();
-
 const uploadedImage = ref();
 
 const productStatuses = ref([
@@ -49,37 +48,26 @@ const productStatuses = ref([
 ]);
 
 async function addNewProduct(fileId) {
-
   debugger
-
   productData.imageId = fileId
-
   try {
     const response = await AddProductService.addProduct(productData, productData.statusId.code);
-
     productData.imageId = '';
     productData.price = '';
     productData.description = '';
     productData.statusId = '';
-
     products.value.push(response.data);
     toast.add({ severity: 'success', summary: 'Success', detail: "Product added successfully!", life: 2000 });
-
   } catch (error) {
-
     toast.add({ severity: 'error', summary: 'Error', detail: error, life: 2000 });
   }
 }
 
 const customBase64Uploader = async (event) => {
-
   const file = event.files[0]
-
   const reader = new FileReader();
   let blob = await fetch(file.objectURL).then((r) => r.blob());
-
   reader.readAsDataURL(blob);
-
   reader.onloadend = async function () {
 
     const fileName = file.name;
@@ -91,16 +79,11 @@ const customBase64Uploader = async (event) => {
       imageData: base64data
     };
     try {
-
       const result = await AddProductService.uploadImage(options);
-      // if (result.status == 200){
       await addNewProduct(result.data)
-      // console.log(result);
-      // }
-      // console.log(result);
-
       toast.add({severity: 'success', summary: 'Success', detail: result, life: 2000});
       productData.image = result;
+      await router.push('/uikit/list')
     } catch (error) {
       toast.add({severity: 'error', summary: 'Error', detail: error, life: 2000});
     }
