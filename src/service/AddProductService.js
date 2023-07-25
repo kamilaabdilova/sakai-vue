@@ -2,7 +2,7 @@
 import $api from '@/http'
 // import {props as products} from "primevue/tag";
 
-async function addProduct(productData, statusId) {
+async function addProduct(productData, statusId, categoryId) {
     debugger
 
     console.log('we are in service');
@@ -10,6 +10,7 @@ async function addProduct(productData, statusId) {
         imageId: productData.imageId,
         price: productData.price,
         description: productData.description,
+        categoryId: categoryId,
         statusId: statusId
     });
     console.log(response);

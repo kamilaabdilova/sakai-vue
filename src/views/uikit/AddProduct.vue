@@ -18,6 +18,9 @@
             <label for="description" class="block text-900 text-xl font-medium mb-2">Description</label>
             <input v-model="productData.description" type="text" placeholder="Description" class="w-full md:w-30rem mb-5" style="padding: 1rem" />
 
+            <label for="status" class="block text-900 text-xl font-medium mb-2">Category</label>
+            <Dropdown v-model="productData.categoryId" :options="categories" optionLabel="name" placeholder="Category" class="w-full md:w-30rem mb-5" />
+
             <label for="status" class="block text-900 text-xl font-medium mb-2">Status</label>
               <Dropdown v-model="productData.statusId" :options="productStatuses" optionLabel="name" placeholder="Select status" class="w-full md:w-30rem mb-5" />
            </div>
@@ -35,27 +38,37 @@ let productData = reactive({
   imageId: '',
   price: '',
   description: '',
+  categoryId: null,
   statusId: null,
 });
+const categories = ref([
+  { name: 'Dress', code: '1' },
+  { name: 'T-Short', code: '2' },
+  { name: 'Jeans', code: '3' }
+]);
 const router = useRouter();
 const toast = useToast();
 const uploadedImage = ref();
 
 const productStatuses = ref([
   { name: 'IN STOCK', code: '1' },
-  { name: 'OUT OF STOCK', code: '2' },
-  { name: 'LOW STOCK', code: '3' }
+  { name: 'LOW STOCK', code: '2' },
+  { name: 'OUT OF STOCK', code: '3' }
 ]);
 
 async function addNewProduct(fileId) {
-  debugger
   productData.imageId = fileId
+
   try {
-    const response = await AddProductService.addProduct(productData, productData.statusId.code);
+    const response = await AddProductService.addProduct(productData, productData.statusId.code, productData.categoryId.code);
+
+    debugger
+
     productData.imageId = '';
     productData.price = '';
     productData.description = '';
-    productData.statusId = '';
+    productData.categoryId = null;
+    productData.statusId = null;
     products.value.push(response.data);
     toast.add({ severity: 'success', summary: 'Success', detail: "Product added successfully!", life: 2000 });
   } catch (error) {
