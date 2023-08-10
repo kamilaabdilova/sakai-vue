@@ -1,7 +1,4 @@
-
 import $api from '@/http'
-// import {props as products} from "primevue/tag";
-
 async function addProduct(productData, statusId, categoryId) {
     debugger
 

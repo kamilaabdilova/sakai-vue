@@ -1,6 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
-
 const router = createRouter({
     history: createWebHashHistory(),
     routes: [
@@ -47,6 +46,17 @@ const router = createRouter({
                     path: '/uikit/list',
                     name: 'list',
                     component: () => import('@/views/uikit/List.vue')
+                },
+                {
+                    path: '/uikit/basket',
+                    name: 'basket',
+                    component: () => import('@/views/uikit/Basket.vue')
+                },
+                {
+                    path: '/uikit/productItem',
+                    name: 'productItem',
+                    component: () => import('@/views/uikit/ProductItem.vue')
+
                 },
                 // {
                 //     path: '/uikit/tree',

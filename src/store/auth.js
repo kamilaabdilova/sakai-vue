@@ -18,7 +18,7 @@ export default {
 
       if (response.status === 200) {
         console.log(response.user)
-        debugger
+        // debugger
 
         localStorage.setItem('user', JSON.stringify(response.user))
         commit('loginSuccess', response.user)

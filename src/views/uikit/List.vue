@@ -1,67 +1,27 @@
 <script setup>
 import {ref, onMounted, reactive, computed} from 'vue';
-import ProductService from '@/service/ProductService';
 import {getListProduct} from "@/service/AddProductService";
+import {useStore} from "vuex";
+import Basket from "@/views/uikit/Basket.vue";
+import {useToast} from "primevue/usetoast";
 
-const orderlistValue = ref([
-  {name: 'San Francisco', code: 'SF'},
-  {name: 'London', code: 'LDN'},
-  {name: 'Paris', code: 'PRS'},
-  {name: 'Istanbul', code: 'IST'},
-  {name: 'Berlin', code: 'BRL'},
-  {name: 'Barcelona', code: 'BRC'},
-  {name: 'Rome', code: 'RM'}
-]);
-// const dataviewValue = ref([]); // Initialize as an empty array
-// async function getAllProduct() {
-//   try {
-//     const response = await getListProduct();
-//
-//     let products = []
-//     for (let i = 0; i < response.length; i++) {
-//       let item = response[i]
-//
-//       products.push({
-//         description: item.description,
-//         id: item.id,
-//         image: item.image,
-//         inventoryStatus: item.status,
-//         price: item.price,
-//       })
-//     }
-//     dataviewValue.value.unshift(...products);
-//   } catch (e) {
-//     console.error(e);
-//   }
-// }
-// const sortedDataviewValue = computed(() => {
-//   return dataviewValue.value.slice().reverse();
-// });
-
-const convertBase64ToImageURL = async (base64String) => {
-  return `data:image/png;base64,${base64String}`
-}
+const store = useStore()
 
 async function getAllProduct() {
   try {
     await (async () => {
       getListProduct().then(response => {
-
         let products = []
         for (let i = 0; i < response.length; i++) {
           let item = response[i]
-
           products.push({
-             category: item.category,
-            // code: 'null',
+            category: item.category,
             description: item.description,
             id: item.id,
             image: item.image,
             inventoryStatus: item.status,
             // name: 'null',
-            price: item.price,
-            // quantity: 5,
-            // rating: 5
+            price: item.price
           })
         }
         dataviewValue.value = products
@@ -71,6 +31,8 @@ async function getAllProduct() {
     console.log(e)
   }
 }
+const toast = useToast();
+
 
 const dataviewValue = ref(null);
 const layout = ref('grid');
@@ -82,17 +44,45 @@ const sortOptions = ref([
   {label: 'Price Low to High', value: 'price'}
 ]);
 
-const productService = new ProductService();
 onMounted(() => {
   // productService.getProductsSmall().then((data) => (dataviewValue.value = data));
-  getAllProduct()
-  console.log(dataviewValue)
+  getAllProduct();
 });
+const addToBasket = async (product) => {
+  const productNew = {
+     userName: store.state.auth.user.userName,
+    category: product.category,
+    description: product.description,
+    id: product.id,
+    image: {
+      id: product.image.id,
+      name: product.image.name,
+      type: product.image.type,
+      image: product.image.image
+    },
+    inventoryStatus: {
+      id: product.inventoryStatus.id,
+      status: product.inventoryStatus.status
+    },
+    price: product.price
+  }
+  let basket = []
+
+  store.state.basket.basket.forEach((item) => {
+    basket.push(item)
+  })
+
+  basket.push(productNew)
+  // Show a success notification
+  toast.add({ severity: 'success', summary: 'Product successfully added to the basket!', life: 3000 });
+  await store.dispatch('basket/addToMyBasket', basket)
+  await console.log(store.state.basket.basket)
+
+};
 
 const onSortChange = (event) => {
   const value = event.value.value;
   const sortValue = event.value;
-
   if (value.indexOf('!') === 0) {
     sortOrder.value = -1;
     sortField.value = value.substring(1, value.length);
@@ -103,6 +93,7 @@ const onSortChange = (event) => {
     sortKey.value = sortValue;
   }
 };
+
 </script>
 
 <template>
@@ -110,7 +101,8 @@ const onSortChange = (event) => {
     <div class="col-12">
       <div class="card">
         <h5>DataView</h5>
-        <DataView :value="dataviewValue" :layout="layout" :paginator="true" :rows="9" :sortOrder="sortOrder"
+        <DataView :value="dataviewValue" :layout="layout" :paginator="true" :rows="9"
+                  :sortOrder="sortOrder"
                   :sortField="sortField">
           <template #header>
             <div class="grid grid-nogutter">
@@ -126,25 +118,29 @@ const onSortChange = (event) => {
           <template #grid="slotProps">
             <div class="col-12 md:col-4">
               <div class="card m-3 border-1 surface-border">
+                <Toast />
                 <div class="flex align-items-center justify-content-between">
                   <div class="flex align-items-center">
                     <i class="pi pi-tag mr-2"></i>
-                    <span class="font-semibold">{{ slotProps.data.category === null ? ' ' : slotProps.data.category.nameCategory}}</span>
+                    <span
+                        class="font-semibold">{{
+                        slotProps.data.category === null ? ' ' : slotProps.data.category.nameCategory
+                      }}</span>
                   </div>
                   <span class="product-badge">{{
                       slotProps.data.inventoryStatus === null ? ' ' : slotProps.data.inventoryStatus.status
                     }}</span>
                 </div>
                 <div class="text-center">
-                  <img style="width: 140px; height: 100px" :src="'data:image/png;base64,'+slotProps.data.image.image" :alt="slotProps.data.image.name" />
+                  <img style="width: 140px; height: 100px" :src="'data:image/png;base64,'+slotProps.data.image.image"
+                       :alt="slotProps.data.image.name"/>
 
                   <div class="text-2xl font-bold">{{ slotProps.data.name }}</div>
                   <div class="mb-3">{{ slotProps.data.description }}</div>
-                  <!--                                    <Rating :modelValue="slotProps.data.rating" :readonly="true" :cancel="false"></Rating>-->
                 </div>
                 <div class="flex align-items-center justify-content-between">
                   <span class="text-2xl font-semibold">${{ slotProps.data.price }}</span>
-                  <Button icon="pi pi-shopping-cart"></Button>
+                  <Button icon="pi pi-shopping-cart" @click="addToBasket(slotProps.data)"></Button>
                 </div>
               </div>
             </div>
@@ -152,19 +148,8 @@ const onSortChange = (event) => {
         </DataView>
       </div>
     </div>
-
-    <div class="col-12 lg:col-4">
-      <div class="card">
-        <h5>OrderList</h5>
-        <OrderList v-model="orderlistValue" listStyle="height:250px" dataKey="code" :rows="10">
-          <template #header>Products</template>
-          <template #item="slotProps">
-            <div>{{ slotProps.item.name }}</div>
-          </template>
-        </OrderList>
-      </div>
-    </div>
   </div>
+  <Basket/>
 </template>
 
 <style scoped lang="scss">

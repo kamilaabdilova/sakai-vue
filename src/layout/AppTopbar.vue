@@ -84,6 +84,10 @@ const isOutsideClicked = (event) => {
                 <i class="pi pi-user"></i>
                 <span>Profile</span>
             </RouterLink>
+          <RouterLink to="/uikit/basket" class="p-link layout-topbar-button">
+            <i class="pi pi-shopping-cart"></i>
+            <span>Basket</span>
+          </RouterLink>
 <!--            <button @click="onSettingsClick()" class="p-link layout-topbar-button">-->
 <!--                <i class="pi pi-cog"></i>-->
 <!--                <span>Settings</span>-->
