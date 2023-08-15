@@ -58,12 +58,8 @@ const productStatuses = ref([
 
 async function addNewProduct(fileId) {
   productData.imageId = fileId
-
   try {
     const response = await AddProductService.addProduct(productData, productData.statusId.code, productData.categoryId.code);
-
-    debugger
-
     productData.imageId = '';
     productData.price = '';
     productData.description = '';

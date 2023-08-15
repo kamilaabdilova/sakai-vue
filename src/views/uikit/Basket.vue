@@ -2,27 +2,33 @@
   <div class="col-12">
     <div class="card">
       <h5>Your basket:</h5>
-
-      <RouterLink to="/uikit/list" class="p-link layout-topbar-button">
+      <RouterLink v-if="$route.path !== '/uikit/list'" to="/uikit/list" class="p-link layout-topbar-button">
         <span>Back to catalog</span>
       </RouterLink>
-
       <div class="card m-3 border-1 surface-border" v-for="item in basketListValue.baskets" :key="item.id">
-         <router-link
-             :to="{ name: 'productItem', query: { id: item.id }  }">
+         <div>
            <Toast />
-           <div class="flex align-items-center justify-content-between">
-             <img style="width: 140px; height: 100px"
-                  :src="'data:image/png;base64,' + item.image.image"
-                  :alt="item.image.name"/>
-             <div class="font-semibold">{{ item.category == null ? '' : item.category.nameCategory }}</div>
-             <div>{{ item.description }}</div>
-             <div class="text-2xl font-semibold">${{ item.price }}</div>
+           <div class="flex align-items-center justify-content-between w-full gap-5">
+             <router-link
+                 :to="{ name: 'productItem', query: { id: item.id }  }"
+                 class="flex align-items-center justify-content-between w-full">
+               <img style="width: 140px; height: 100px"
+                    :src="'data:image/png;base64,' + item.image.image"
+                    :alt="item.image.name"/>
+               <div class="font-semibold">{{ item.category == null ? '' : item.category.nameCategory }}</div>
+               <div>{{ item.description }}</div>
+               <div class="text-2xl font-semibold">${{ item.price }}</div>
+             </router-link>
              <Button icon="pi pi-trash " @click="removeFromBasket(item)"/>
            </div>
-         </router-link>
+         </div>
       </div>
       <h5>Number of products in the basket : {{ basketListValue.baskets.length }}</h5>
+      <h5>Total price: ${{ calculateTotalPrice() }}</h5>
+<!--      <Button class="p-button-primary" label="Оформить заказ"/>-->
+      <router-link to="/uikit/order">
+        <Button class="p-button-primary" label="Оформить заказ"/>
+      </router-link>
     </div>
   </div>
 </template>
@@ -36,7 +42,9 @@ import {useRouter} from "vue-router";
 const toast = useToast();
 const store = useStore();
 const currentUser = store.state.auth.user.userName;
-
+const calculateTotalPrice = () => {
+  return basketListValue.baskets.reduce((total, item) => total + item.price, 0);
+};
 const basketListValue = reactive({
   baskets: [],
 });

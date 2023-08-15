@@ -1,12 +1,14 @@
 <template>
   <div class="card m-3 border-1 surface-border">
     <div class="flex align-items-center justify-content-between">
-<!--      {{product.image.image}}-->
-      <img style="width: 140px; height: 100px"
-           :src="'data:image/png;base64,' + product.image"/>
-      <div class="font-semibold">{{ product.category == null ? '' : product.category.nameCategory }}</div>
+<!--      <img style="width: 140px; height: 100px"-->
+<!--           :src="'data:image/png;base64,' + product.image.image"/>-->
+      <img style="width: 500px; height: 600px"
+           v-if="product.image && product.image.image"
+           :src="'data:image/png;base64,' + product.image.image"/>
+      <div class="font-semi-bold">{{ product.category == null ? '' : product.category.nameCategory }}</div>
       <div>{{ product.description }}</div>
-      <div class="text-2xl font-semibold">${{ product.price }}</div>
+      <div class="text-2xl font-semi-bold">${{ product.price }}</div>
     </div>
   </div>
 </template>
@@ -45,10 +47,10 @@ const getAllProduct = async () => {
         price: item.price
       })
     }
+
     productList.value = products
   })
 }
-
 const getProductById = async () => {
   const foundProduct = productList.value.find((item) => item.id === id);
   product.category = foundProduct.category
@@ -62,7 +64,6 @@ onMounted(async () => {
   await getAllProduct()
   await getProductById()
 })
-
 
 </script>
 

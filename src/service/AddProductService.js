@@ -1,7 +1,5 @@
 import $api from '@/http'
 async function addProduct(productData, statusId, categoryId) {
-    debugger
-
     console.log('we are in service');
     const response = await $api.post('/product/save', {
         imageId: productData.imageId,
@@ -11,7 +9,6 @@ async function addProduct(productData, statusId, categoryId) {
         statusId: statusId
     });
     console.log(response);
-
     return response;
 }
 
@@ -27,7 +24,6 @@ async function getListProduct(){
         console.error('Error adding product:', error);
         throw error;
     }
-
 }
 
 export {

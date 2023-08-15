@@ -58,6 +58,11 @@ const router = createRouter({
                     component: () => import('@/views/uikit/ProductItem.vue'),
                     props: route => ({ id: route.query.id })
                 },
+                {
+                    path: '/uikit/order',
+                    name: 'order',
+                    component: () => import('@/views/uikit/Order.vue')
+                },
                 // {
                 //     path: '/uikit/tree',
                 //     name: 'tree',
