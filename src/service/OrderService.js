@@ -17,6 +17,17 @@ async function saveOrder(orderData) {
         throw error;
     }
 }
+async function getAllOrders() {
+    try {
+        const response = await $api.get('/order/findAll');
+        return response.data;
+    } catch (error) {
+        console.error('Произошла ошибка:', error);
+        return [];
+    }
+}
+
 export {
-    saveOrder
+    saveOrder,
+    getAllOrders
 }

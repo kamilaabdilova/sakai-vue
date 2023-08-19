@@ -2,8 +2,8 @@
   <div class="col-12">
     <div class="card">
       <h5>Your basket:</h5>
-      <RouterLink v-if="$route.path !== '/uikit/list'" to="/uikit/list" class="p-link layout-topbar-button">
-        <span>Back to catalog</span>
+      <RouterLink v-if="$route.path !== '/uikit/list'" to="/uikit/list">
+        <Button class="p-button-primary" label="Back to catalog"/>
       </RouterLink>
       <div class="card m-3 border-1 surface-border" v-for="item in basketListValue.baskets" :key="item.id">
          <div>
@@ -25,7 +25,6 @@
       </div>
       <h5>Number of products in the basket : {{ basketListValue.baskets.length }}</h5>
       <h5>Total price: ${{ calculateTotalPrice() }}</h5>
-<!--      <Button class="p-button-primary" label="Оформить заказ"/>-->
       <router-link to="/uikit/order">
         <Button class="p-button-primary" label="Оформить заказ"/>
       </router-link>
@@ -37,7 +36,6 @@
 import { computed, onMounted, reactive, watch } from 'vue';
 import { useStore } from 'vuex';
 import { useToast } from 'primevue/usetoast';
-import {useRouter} from "vue-router";
 
 const toast = useToast();
 const store = useStore();

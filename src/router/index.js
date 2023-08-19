@@ -59,6 +59,11 @@ const router = createRouter({
                     props: route => ({ id: route.query.id })
                 },
                 {
+                    path: '/uikit/orderAdmin',
+                    name: 'orderAdmin',
+                    component: () => import('@/views/uikit/OrderAdmin.vue')
+                },
+                {
                     path: '/uikit/order',
                     name: 'order',
                     component: () => import('@/views/uikit/Order.vue')
@@ -68,11 +73,11 @@ const router = createRouter({
                 //     name: 'tree',
                 //     component: () => import('@/views/uikit/Tree.vue')
                 // },
-                {
-                    path: '/uikit/panel',
-                    name: 'panel',
-                    component: () => import('@/views/uikit/Panels.vue')
-                },
+                // {
+                //     path: '/uikit/panel',
+                //     name: 'panel',
+                //     component: () => import('@/views/uikit/Panels.vue')
+                // },
                 // {
                 //     path: '/uikit/overlay',
                 //     name: 'overlay',
